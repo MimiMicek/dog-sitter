@@ -7,15 +7,13 @@
         <meta name="author" content="Mark Otto, Jacob Thornton, and Bootstrap contributors">
         <meta name="generator" content="Jekyll v3.8.6">
         <title>Dog sitter</title>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 
         <link rel="canonical" href="https://getbootstrap.com/docs/4.4/examples/cover/">
         <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
-        <!-- Bootstrap core CSS --
+        <script src="https://cdn.jsdelivr.net/npm/sweetalert2@9"></script>
 
-        <!-- Favicons -->
-        <meta name="msapplication-config" content="/docs/4.4/assets/img/favicons/browserconfig.xml">
         <meta name="theme-color" content="#563d7c">
-
 
         <style>
             .bd-placeholder-img {

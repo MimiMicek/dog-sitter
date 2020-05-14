@@ -4,7 +4,7 @@ require_once 'header.php';
 
 ?>
 
-<form>
+<form id="login" method="post">
     <div class="form-group">
         <label for="email">Email</label>
         <input type="email" class="form-control" id="email">
@@ -14,7 +14,7 @@ require_once 'header.php';
         <input type="password" class="form-control" id="password">
     </div>
     <div class="form-group">
-        <button type="submit" class="btn btn-secondary">Register</button classform-group>
+        <button class="btn-lg btn-secondary">Login</button classform-group>
     </div>
 </form>
 
