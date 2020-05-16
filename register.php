@@ -46,7 +46,7 @@ require_once 'header.php';
         </div>
         <div class="form-group col-md-2">
             <label for="phone">Phone number</label>
-            <input type="number" name="phone" class="form-control"  value="11111111" id="phone" minlength="8" maxlength="8" required>
+            <input type="number" name="phone" class="form-control" min="10000000" max="99999999" value="11111111" id="phone" minlength="8" maxlength="8" required>
         </div>
         <div class="form-group col-md-6">
             <label for="userType">I'm a</label>
@@ -67,7 +67,7 @@ require_once 'header.php';
                 <label for="info">Information about yourself and/or the dog.</label>
                 <textarea class="form-control" name="info" id="info" placeholder="" minlength="10" maxlength="1500" required>fadfadfdafdfadafdafadfdaffdfaadffda</textarea>
             </div>
-            <button name="uploadImage" type="submit" class="btn-lg btn-secondary">Register</button>
+            <button name="uploadImage" type="submit" class="btn btn-secondary">Register</button>
         </div>
     </div>
 

@@ -14,7 +14,7 @@ require_once 'header.php';
         <input type="password" name="password" class="form-control" id="password" required>
     </div>
     <div class="form-group">
-        <button class="btn-lg btn-secondary">Login</button classform-group>
+        <button class="btn btn-secondary">Login</button classform-group>
     </div>
 </form>
 

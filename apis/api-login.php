@@ -16,12 +16,13 @@ if(strlen($password) < 4){ sendResponse(0, __LINE__, 'Passwords cannot be less t
 if(strlen($password) > 30){ sendResponse(0, __LINE__, 'Passwords cannot be longer than 30 characters!'); }
 
 try{
-
+    //Checking if the password and email match
     $stmt = $db->prepare( "SELECT user_id, password FROM users WHERE email=:email" );
     $stmt->bindValue(':email', $email );
     $stmt->execute();
     $aRows = $stmt->fetchAll();
 
+    //Verifying hashed password
     if (!password_verify($password, $aRows[0]->password)) {
 
         echo 'Wrong password, try again!';
@@ -30,12 +31,24 @@ try{
     }
 
    $userId = $aRows[0]->user_id;
-   //echo "User id is: ". $userId;
+    echo "User id: " . $userId;
 
    if( count($aRows) == 0 ){
 
         echo 'Sorry, no user with that credentials found!';
         exit;
+    }
+
+   //Checking if a user already has a saved account number
+    $stmt = $db->prepare( "SELECT account_id FROM accounts WHERE user_id_fk=:userId" );
+    $stmt->bindValue(':userId', $userId );
+    $stmt->execute();
+    $aAccountRows = $stmt->fetchAll();
+
+    if( count($aAccountRows) == 0 ){
+        header("refresh:3;url=../bank-account.php");
+    }else{
+        header("refresh:3;url=../index.php");
     }
 
 }catch( PDOEXception $ex ){
@@ -44,9 +57,8 @@ try{
 
 session_start();
 $_SESSION['userId'] = $userId;
-header("refresh:3;url=../index.php");
-sendResponse(1, __LINE__, "Successfully logged in!");
 
+sendResponse(1, __LINE__, "Successfully logged in!");
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 function sendResponse($bStatus, $iLineNumber, $sMessage){

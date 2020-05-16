@@ -95,3 +95,13 @@ body {
 .mastfoot {
     color: black;
 }
+
+#accountNumber{
+    display: initial;
+    width: 30%;
+}
+
+#regNumber{
+    display: initial;
+    width: 10%;
+}
