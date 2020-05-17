@@ -51,8 +51,8 @@ require_once 'header.php';
         <div class="form-group col-md-6">
             <label for="userType">I'm a</label>
             <select id="userType" name="userType" class="form-control" required>
-                <option selected value="1">dog owner</option>
-                <option value="2">dog sitter</option>
+                <option selected value="2">dog owner</option>
+                <option value="3">dog sitter</option>
             </select>
         </div>
     </div>
