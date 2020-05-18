@@ -68,16 +68,15 @@ try{
 
     $stmt->execute();
 
-    $aRows = $stmt->fetchAll();
+    $aOwnerAccountId = $stmt->fetchAll();
 
-    $numberOfValidOwners = count($aRows);
+    $numberOfValidOwners = count($aOwnerAccountId);
 
     $validOwnersAmount = $numberOfValidOwners * $amountOwner;
 
-    //var_dump($validOwnersAmount);
-
     $db->beginTransaction();
 
+    //Updating the balance on Owner accounts
     $stmt = $db->prepare('UPDATE accounts
                                    INNER JOIN users 
                                    ON users.user_id = accounts.user_id_fk
@@ -89,11 +88,12 @@ try{
     $stmt->bindValue(':amountOwner', $amountOwner );
 
     if(  !$stmt->execute() ){
-        echo 'Cannot update the user '.__LINE__;
+        echo 'Cannot update the user balance '.__LINE__;
         $db->rollBack();
         exit;
     }
 
+    //Updating the balance on Admin accounts
     $stmt = $db->prepare('UPDATE accounts
                                    INNER JOIN users 
                                    ON users.user_id = accounts.user_id_fk
@@ -104,35 +104,57 @@ try{
     $stmt->bindValue(':validOwnersAmount', $validOwnersAmount );
 
     if(  !$stmt->execute() ){
-        echo 'Cannot update the balance '.__LINE__;
+        echo 'Cannot update the Admin balance '.__LINE__;
         $db->rollBack();
         exit;
     }
 
+    //Selecting Admin accountId
+    $stmt = $db->prepare('SELECT accounts.account_id
+                                   FROM accounts 
+                                   INNER JOIN users 
+                                   ON users.user_id = accounts.user_id_fk 
+                                   WHERE users.user_type_id_fk = :typeAdmin');
 
+    $stmt->bindValue(':typeAdmin', $typeAdmin );
 
-/*    $stmt = $db->prepare('INSERT INTO transfers VALUES (null, :fromAccount, :toAccount, :amount, :text, null)');
+    $stmt->execute();
 
-    $stmt->bindValue(':fromAccount', $fromAccount );
-    $stmt->bindValue(':toAccount', $toAccount );
-    $stmt->bindValue(':amount', $amount );
+    $aRows = $stmt->fetchAll();
 
+    $adminsAccountId = $aRows[0]->account_id;
 
-    if(  !$stmt->execute() ){ // only works because the line PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION, in the connect.php has been commented out
+    $timestamp = $_SERVER['REQUEST_TIME'];
+
+    foreach ($aOwnerAccountId as $key => $accountId){
+        $listOfOwnerAccountIds[] = $accountId->account_id;
+    }
+
+    //Inserting the values
+    $query = "INSERT INTO bank_transfers VALUES ";
+
+    foreach ($listOfOwnerAccountIds as $fromAccountId){
+        $query .= "('null','" . $fromAccountId . "','" . $adminsAccountId . "','" . $amountOwner . "','" . $timestamp . "'),";
+    }
+
+    $query = substr($query, 0, -1);
+
+    $stmt = $db->prepare($query);
+
+    $stmt->execute();
+
+    var_dump($stmt);
+
+    if(  !$stmt->execute() ){
         echo 'Cannot transfer'.__LINE__;
         $db->rollBack();
         exit;
-    }*/
-
+    }
 
      echo 'The money was successfully transferred!';
      $db->commit();
 
-    //TODO do a SELECT statement for typeAdmin and typeSitter
-
-    /*$stmt->bindValue(':typeSitter', $typeSitter );
-     $stmt->bindValue(':amountSitter', $amountSitter );*/
-
+    //TODO do a TRANSFER for typeAdmin and typeSitter
 
 }catch( PDOEXception $ex ){
     echo $ex;
