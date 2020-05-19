@@ -20,9 +20,10 @@ $typeOwner = 2;
 $typeSitter = 3;
 $amountOwner = 100;
 $amountSitter = 50;
+$timestamp = date("Y-m-d H:i:s");
 
-$email = 'email@gmail.com';
-$emailSubject = 'List of users with insufficient funds';
+/*$email = 'email@gmail.com';
+$emailSubject = 'List of users with insufficient funds';*/
 
 try{
     //Check if accounts exist and if users have money in their accounts
@@ -124,8 +125,6 @@ try{
 
     $adminsAccountId = $aRows[0]->account_id;
 
-    $timestamp = $_SERVER['REQUEST_TIME'];
-
     foreach ($aOwnerAccountId as $key => $accountId){
         $listOfOwnerAccountIds[] = $accountId->account_id;
     }
@@ -141,20 +140,142 @@ try{
 
     $stmt = $db->prepare($query);
 
-    $stmt->execute();
-
-    var_dump($stmt);
-
     if(  !$stmt->execute() ){
         echo 'Cannot transfer'.__LINE__;
         $db->rollBack();
         exit;
     }
 
-     echo 'The money was successfully transferred!';
-     $db->commit();
+    echo 'The money from Owners was successfully transferred!';
+    $db->commit();
 
-    //TODO do a TRANSFER for typeAdmin and typeSitter
+}catch( PDOEXception $ex ){
+    echo $ex;
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+//TRANSFER for typeAdmin and typeSitter
+
+try{
+    //Check if accounts exist and if Sitter users have money in their accounts
+    $stmt = $db->prepare( 'SELECT accounts.account_number, accounts.balance, users.first_name, users.last_name
+                                    FROM accounts
+                                    INNER JOIN users 
+                                    ON users.user_id = accounts.user_id_fk
+                                    WHERE users.user_type_id_fk = :typeSitter
+                                    AND :amountSitter > accounts.balance' );
+
+    $stmt->bindValue(':typeSitter', $typeSitter );
+    $stmt->bindValue(':amountSitter', $amountSitter );
+
+    $stmt->execute();
+
+    $insufficientFundsSitter = $stmt->fetchAll();
+
+    //var_dump($insufficientFundsSitter);
+
+    if( count($insufficientFundsSitter) > 0 ){
+        echo 'Sorry, these accounts have no money!';
+        $sitterFullName = $insufficientFundsSitter[0]->first_name . ' ' . $insufficientFundsSitter[0]->last_name;
+        $sitterAccountNumber = $insufficientFundsSitter[0]->account_number;
+        $sitterAccountBalance = $insufficientFundsSitter[0]->balance;
+        echo $sitterFullName . ' ' . $sitterAccountNumber . ' ' . $sitterAccountBalance;
+        exit;
+    }
+
+    //Checking the number of Sitters that have money in their account
+    $stmt = $db->prepare( 'SELECT accounts.account_id
+                                    FROM accounts
+                                    INNER JOIN users 
+                                    ON users.user_id = accounts.user_id_fk
+                                    WHERE users.user_type_id_fk = :typeSitter
+                                    AND accounts.balance > :amountSitter' );
+
+    $stmt->bindValue(':typeSitter', $typeSitter );
+    $stmt->bindValue(':amountSitter', $amountSitter );
+
+    $stmt->execute();
+
+    $aSitterAccountId = $stmt->fetchAll();
+
+    $numberOfValidSitters = count($aSitterAccountId);
+
+    $validSittersAmount = $numberOfValidSitters * $amountSitter;
+
+    $db->beginTransaction();
+
+    //Updating the balance on Sitter accounts
+    $stmt = $db->prepare('UPDATE accounts
+                                   INNER JOIN users 
+                                   ON users.user_id = accounts.user_id_fk
+                                   SET accounts.balance = accounts.balance - :amountSitter
+                                   WHERE users.user_type_id_fk = :typeSitter
+                                   AND accounts.balance > :amountSitter');
+
+    $stmt->bindValue(':typeSitter', $typeSitter );
+    $stmt->bindValue(':amountSitter', $amountSitter);
+
+    if(  !$stmt->execute() ){
+        echo 'Cannot update the user balance '.__LINE__;
+        $db->rollBack();
+        exit;
+    }
+
+    //Updating the balance on Admin accounts
+    $stmt = $db->prepare('UPDATE accounts
+                                   INNER JOIN users 
+                                   ON users.user_id = accounts.user_id_fk
+                                   SET accounts.balance = accounts.balance + :validSittersAmount
+                                   WHERE users.user_type_id_fk = :typeAdmin');
+
+    $stmt->bindValue(':typeAdmin', $typeAdmin );
+    $stmt->bindValue(':validSittersAmount', $validSittersAmount );
+
+    if(  !$stmt->execute() ){
+        echo 'Cannot update the Admin balance '.__LINE__;
+        $db->rollBack();
+        exit;
+    }
+
+    //Selecting Admin accountId
+    $stmt = $db->prepare('SELECT accounts.account_id
+                                   FROM accounts 
+                                   INNER JOIN users 
+                                   ON users.user_id = accounts.user_id_fk 
+                                   WHERE users.user_type_id_fk = :typeAdmin');
+
+    $stmt->bindValue(':typeAdmin', $typeAdmin );
+
+    $stmt->execute();
+
+    $aRows = $stmt->fetchAll();
+
+    $adminsAccountId = $aRows[0]->account_id;
+
+    foreach ($aSitterAccountId as $key => $accountId){
+        $listOfSitterAccountIds[] = $accountId->account_id;
+    }
+
+    //Inserting the values
+   $query = "INSERT INTO bank_transfers VALUES ";
+
+   foreach ($listOfSitterAccountIds as $fromAccountId){
+        $query .= "('null','" . $fromAccountId . "','" . $adminsAccountId . "','" . $amountSitter . "','" . $timestamp . "'),";
+   }
+
+   $query = substr($query, 0, -1);
+
+   $stmt = $db->prepare($query);
+
+   if(  !$stmt->execute() ){
+       echo 'Cannot transfer'.__LINE__;
+       $db->rollBack();
+       exit;
+   }
+
+   echo 'The money from Sitters was successfully transferred!';
+   $db->commit();
 
 }catch( PDOEXception $ex ){
     echo $ex;
