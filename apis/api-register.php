@@ -76,7 +76,7 @@ if (isset($image)){
 
     $image = $_FILES['image']['name'];
 
-    $uniqueName = $fName.$lName.uniqid().$image;
+    $uniqueName = $fName.$lName.$image;
 
     $target_file = sprintf("%s/../images/$uniqueName", __DIR__);
 }
@@ -111,7 +111,6 @@ if(strlen($info) > 1500){ sendResponse(0, __LINE__, "Information cannot be longe
 $userType = $_POST['userType'] ?? '';
 if(empty($userType)){ sendResponse(0, __LINE__, "Please choose a user type!"); }
 
-//TODO check if the email is already in the database
 if ($uploadOk == 0) {
 
     echo 'Sorry, your file was not uploaded.';

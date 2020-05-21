@@ -15,7 +15,7 @@ try{
 
     $db = new PDO( $sConnection, $sUserName, $sPassword, $aOptions );
 
-    echo '{"status":1,"message":"Connected to database"}';
+    //echo '{"status":1,"message":"Connected to database"}';
 
 }catch( PDOException $e){
     echo $e;

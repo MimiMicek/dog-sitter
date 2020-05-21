@@ -2,8 +2,6 @@
 
 require_once __DIR__.'/../db-connect.php';
 
-//ini_set('display_errors', 0);
-
 /*ini_set("SMTP","ssl://smtp.gmail.com");
 ini_set("smtp_port","465");
 

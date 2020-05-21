@@ -48,7 +48,7 @@
                     <a class="nav-link" href="find-dog">Find a dog</a>
                     <a class="nav-link" href="find-sitter">Find a sitter</a>
                     <a class="nav-link" href="my-profile">My profile</a>
-
+                    <a class="nav-link" href="apis/api-logout.php">Logout</a>
                 </nav>
             </div>
         </header>

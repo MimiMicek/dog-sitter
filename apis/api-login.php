@@ -2,8 +2,6 @@
 
 require_once __DIR__.'/../db-connect.php';
 
-ini_set('display_errors', 0);
-
 $email = $_POST['email'] ?? '';
 if(empty($email)){ sendResponse(0, __LINE__, 'Please enter email!'); }
 if(!filter_var($email, FILTER_VALIDATE_EMAIL)){
