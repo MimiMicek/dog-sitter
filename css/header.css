@@ -120,10 +120,32 @@ div.image{
     margin-right: auto;
 }
 
-#profile{
-    margin-top: 15px;
+.btn-warning{
+    color: #fff;
+    background-color: #ffc107;
+    border: 1px solid transparent;
+    text-shadow: 0 0.05rem 0.1rem rgba(0, 0, 0, .5);
 }
 
-.btn-danger{
-    margin-top: 40px;
+.btn-warning:focus, .btn-warning:hover{
+    color: #fff;
+}
+
+input[type="text"],
+input[type="password"],
+input[type="email"],
+input[type="number"],
+.form-profile{
+    background: transparent;
+    border: none;
+    border-bottom: 1px solid #000000;
+    -webkit-box-shadow: none;
+    box-shadow: none;
+    border-radius: 0;
+}
+
+.form-profile.info{
+    height: 290px;
+    width: inherit;
+    overflow: hidden;
 }
