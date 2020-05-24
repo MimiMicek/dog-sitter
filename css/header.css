@@ -135,7 +135,7 @@ input[type="text"],
 input[type="password"],
 input[type="email"],
 input[type="number"],
-.form-profile{
+.form-profile, .form-control.info{
     background: transparent;
     border: none;
     border-bottom: 1px solid #000000;
@@ -149,3 +149,13 @@ input[type="number"],
     width: inherit;
     overflow: hidden;
 }
+
+#info{
+    background: transparent;
+    border: none;
+    border-bottom: 1px solid #000000;
+    -webkit-box-shadow: none;
+    box-shadow: none;
+    border-radius: 0;
+}
+
