@@ -65,13 +65,16 @@ require_once 'header.php';
         <div class="form-group col-md-6">
             <div class="mb-3">
                 <label for="info">Information about yourself and/or the dog.</label>
-                <textarea class="form-control" name="info" id="info" placeholder="" minlength="10" maxlength="1500" required>
-                    Doggo ipsum pupperino pupper fat boi noodle horse such treat, woofer doggorino bork.
-                    I am bekom fat heckin angery woofer fluffer I am bekom fat, fluffer mlem.
-                    Wow such tempt lotsa pats puggorino tungg, woofer the neighborhood pupper.
-                    Sub woofer puggorino blop, woofer.
-                    Shooberino very taste wow you are doing me a frighten puggorino doge, borkf vvv borkf.
-                </textarea>
+                <textarea class="form-control"
+                          name="info" id="info"
+                          placeholder="Doggo ipsum pupperino pupper fat boi noodle horse such treat, woofer doggorino bork.
+                                       I am bekom fat heckin angery woofer fluffer I am bekom fat, fluffer mlem.
+                                       Wow such tempt lotsa pats puggorino tungg, woofer the neighborhood pupper.
+                                       Sub woofer puggorino blop, woofer.
+                                       Shooberino very taste wow you are doing me a frighten puggorino doge, borkf vvv borkf."
+                                       minlength="10"
+                                       maxlength="1500"
+                                       required></textarea>
             </div>
             <button name="uploadImage" type="submit" class="btn btn-secondary">Register</button>
         </div>

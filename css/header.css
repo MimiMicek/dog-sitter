@@ -159,3 +159,10 @@ input[type="number"],
     border-radius: 0;
 }
 
+.message{
+    background: transparent;
+    border: 1px solid #000000;
+    height: 250px;
+    width: inherit;
+    overflow: hidden;
+}

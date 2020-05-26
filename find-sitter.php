@@ -50,8 +50,8 @@ try{
                        <hr>
                        '.$aRow->info.'     
                        <div class="form-group pt-4 col-md-12 text-center">
-                         <a href="send-message.php" class="btn btn-primary">Message</a>
-                         <a href="book-sitter.php" class="btn btn-success">Book</a>
+                         <a href="send-message?id='.$aRow->user_id.'" class="btn btn-primary">Message</a>
+                         <a href="book-sitter?id='.$aRow->user_id.'" class="btn btn-success">Book</a>
                        </div>
                      </div>
                     <hr>
