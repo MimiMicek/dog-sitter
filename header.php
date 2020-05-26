@@ -1,11 +1,65 @@
+<?php
+
+require_once __DIR__ . '/db-connect.php';
+
+ini_set('display_errors', 0);
+session_start();
+
+$userId = $_SESSION['userId'];
+//var_dump($userId);
+$typeOwner = 2;
+$typeSitter = 3;
+
+try {
+    //Getting owners ids
+    $stmt = $db->prepare('SELECT users.user_id
+                                   FROM users
+                                   WHERE users.user_type_id_fk = :typeOwner');
+
+    $stmt->bindValue(':typeOwner', $typeOwner);
+
+    $stmt->execute();
+
+    $aOwnerIdRows = $stmt->fetchAll();
+
+    foreach ($aOwnerIdRows as $row){
+        $listOfOwnerIds[] = $row->user_id;
+    }
+
+    if (count($aOwnerIdRows) == 0) {
+        echo 'Sorry no users found!';
+    }
+
+    //Getting sitters ids
+    $stmt = $db->prepare('SELECT users.user_id
+                                   FROM users
+                                   WHERE users.user_type_id_fk = :typeSitter');
+
+    $stmt->bindValue(':typeSitter', $typeSitter);
+
+    $stmt->execute();
+
+    $aSitterIdRows = $stmt->fetchAll();
+
+    foreach ($aSitterIdRows as $row){
+        $listOfSitterIds[] = $row->user_id;
+    }
+
+    if (count($aSitterIdRows) == 0) {
+        echo 'Sorry no users found!';
+    }
+
+} catch (PDOException $ex) {
+    echo $ex;
+}
+
+?>
+
 <!doctype html>
 <html lang="en">
     <head>
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-        <meta name="description" content="">
-        <meta name="author" content="Mark Otto, Jacob Thornton, and Bootstrap contributors">
-        <meta name="generator" content="Jekyll v3.8.6">
         <title>Dog sitter</title>
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 
@@ -41,14 +95,29 @@
                 <h3 class="masthead-brand">DOG SITTER™</h3>
                 <nav class="nav nav-masthead justify-content-center">
                     <a class="nav-link active" href="index">Home</a>
-                    <!--TODO If user is already logged in hide the Register link-->
-                    <a class="nav-link" href="register">Register</a>
-                    <a class="nav-link" href="login">Login</a>
-                    <!--TODO Select users by user type (check with saved session) and limit if they see Find dog or find sitter-->
-                    <a class="nav-link" href="find-dog">Find a dog</a>
-                    <a class="nav-link" href="find-sitter">Find a sitter</a>
-                    <a class="nav-link" href="my-profile">My profile</a>
-                    <a class="nav-link" href="apis/api-logout.php">Logout</a>
+                    <?php
+                        if (!$userId){
+                            echo '<a class="nav-link" href="register">Register</a>
+                                  <a class="nav-link" href="login">Login</a>';
+                        }
+                    ?>
+                    <?php
+                        if ($userId){
+                            echo '<a class="nav-link" href="my-profile">My profile</a>
+                                  <a class="nav-link" href="my-messages">My messages</a>';
+
+                            if (!in_array($userId, $listOfSitterIds)){
+                                echo '<a class="nav-link" href="find-sitter">Find a sitter</a>';
+                            }
+
+                            if (!in_array($userId, $listOfOwnerIds)){
+                                echo ' <a class="nav-link" href="find-dog">Find a dog</a>';
+                            }
+
+                            echo '<a class="nav-link" href="apis/api-logout.php">Logout</a>';
+                        }
+                    ?>
+
                 </nav>
             </div>
         </header>
