@@ -3,7 +3,7 @@
 require_once 'header.php';
 require_once __DIR__ . '/db-connect.php';
 
-//ini_set('display_errors', 0);
+ini_set('display_errors', 0);
 session_start();
 
 if (!isset($_SESSION['userId'])) {

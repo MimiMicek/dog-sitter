@@ -130,8 +130,7 @@ try{
     </div>
     <div class="form-row">
         <div class="form-group col-md-6">
-
-        <label for="image">Image: </label>
+        <h6>Profile image</h6>
         <?php
         foreach ($aRows as $aRow){
             echo '
@@ -144,7 +143,7 @@ try{
         </div>
         <div class="form-group col-md-6">
             <p>
-                <h6 for="info">About me</h6>
+                <h6>About me</h6>
                 <textarea name="info"
                        class="form-profile info"
                        type="text"

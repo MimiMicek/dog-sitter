@@ -166,3 +166,8 @@ input[type="number"],
     width: inherit;
     overflow: hidden;
 }
+
+.message-bottom{
+    border-bottom: 3px solid black;
+}
+
