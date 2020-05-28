@@ -31,7 +31,8 @@ try {
     //var_dump($aReceivedMessages);
 
     if (count($aReceivedMessages) == 0) {
-        echo 'Sorry no received messages found!';
+        //echo 'Sorry no received messages found!';
+        printf('Sorry no received messages found! ');
     }
 
     //Getting sent messages
@@ -61,11 +62,13 @@ try {
 
 ?>
 
-<div class="form-row pt-5 pb-3">
+<div class="form-row pt-5">
     <div class="form-row nav-masthead">
         <a id="inbox" href="#" class="nav-link">Inbox</a>
         <a id="sent" href="#" class="nav-link">Sent</a>
     </div>
+</div>
+<div class="form-row pt-1 pb-3">
     <div id="receivedMessages">
         <?php /*If Inbox clicked show received, if Sent link clicked show sent messages*/
         foreach ($aReceivedMessages as $receivedMessage){
@@ -95,7 +98,7 @@ try {
                            <hr>
                            '.$sentMessage->message.'     
                            <div class="form-group pt-4 col-md-12 text-right">
-                             <a href="apis/delete-message?id='.$sentMessage->message_id.'" class="btn btn-danger">Delete</a>
+                             <a href="apis/api-delete-message?id='.$sentMessage->message_id.'" class="btn btn-danger">Delete</a>
                            </div>
                            <div class="message-bottom pt-3"></div>
                          </div>

@@ -5,7 +5,7 @@ require_once __DIR__.'/../db-connect.php';
 session_start();
 
 if(!isset($_SESSION['userId'])){
-    header('Location: ../index.php');
+    header('Location: ../index');
 }
 
 $userId = $_SESSION['userId'];
@@ -28,4 +28,4 @@ try{
 
 session_destroy();
 
-header('Location: ../index.php');
+header('Location: ../index');
