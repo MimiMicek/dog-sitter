@@ -25,48 +25,56 @@ if(empty($startDate)){ sendResponse(0, __LINE__, "Start date is missing!"); }
 $endDate = $_POST['endDate'] ?? '';
 if(empty($endDate)){ sendResponse(0, __LINE__, "End date is missing!"); }
 
+$dateToday = date('Y-m-d');
+
 try {
 
-    $stmt = $db->prepare('SELECT *
+    if($startDate >= $dateToday){
+        //Check if the date already exists
+        $stmt = $db->prepare('SELECT *
                                    FROM bookings AS b
                                    WHERE b.start_date = :startDate
                                    OR b.end_date = :endDate');
 
-    $stmt->bindValue(':startDate', $startDate );
-    $stmt->bindValue(':endDate', $endDate );
+        $stmt->bindValue(':startDate', $startDate );
+        $stmt->bindValue(':endDate', $endDate );
 
-    $stmt->execute();
+        $stmt->execute();
 
-    $aRows = $stmt->fetchAll();
+        $aRows = $stmt->fetchAll();
 
-    if(count($aRows) > 0){
-        echo 'Sorry this dates are already occupied. Please try again!';
-        exit;
-        header("refresh:5;url=../find-sitter");
+        if(count($aRows) > 0){
+            echo 'Sorry this dates are already occupied. Please try again!';
+            exit;
+            header("refresh:5;url=../find-sitter");
+        }
+
+        //Saving the booking
+        $stmt = $db->prepare('INSERT INTO bookings VALUES( null, :ownerUserId, :sitterUserId, :startDate, :endDate, :bookingTypeId)');
+        $stmt->bindValue(':ownerUserId', $ownerUserId );
+        $stmt->bindValue(':sitterUserId', $sitterUserId );
+        $stmt->bindValue(':bookingTypeId', $bookingTypeId );
+        $stmt->bindValue(':startDate', $startDate );
+        $stmt->bindValue(':endDate', $endDate );
+        $stmt->execute();
+
+        var_dump($stmt->rowCount());
+
+        //Using rowcount() when INSERTing, UPDATEing or DELETEing
+        if( $stmt->rowCount() == 0 ){
+            echo 'Sorry, the booking was not saved!';
+            exit;
+        }
+    }else{
+        echo 'The start date needs to be greater than or equal to: '.$dateToday;
     }
 
-    //Saving the booking
-    $stmt = $db->prepare('INSERT INTO bookings VALUES( null, :ownerUserId, :sitterUserId, :startDate, :endDate, :bookingTypeId)');
-    $stmt->bindValue(':ownerUserId', $ownerUserId );
-    $stmt->bindValue(':sitterUserId', $sitterUserId );
-    $stmt->bindValue(':bookingTypeId', $bookingTypeId );
-    $stmt->bindValue(':startDate', $startDate );
-    $stmt->bindValue(':endDate', $endDate );
-    $stmt->execute();
-
-    var_dump($stmt->rowCount());
-
-    //Using rowcount() when INSERTing, UPDATEing or DELETEing
-    if( $stmt->rowCount() == 0 ){
-        echo 'Sorry, the booking was not saved!';
-        exit;
-    }
 
 }catch( PDOEXception $ex ){
     echo $ex;
 }
 
-header("refresh:5;url=../my-profile");
+//header("refresh:5;url=../my-profile");
 sendResponse(1, __LINE__, "Your booking is saved!");
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

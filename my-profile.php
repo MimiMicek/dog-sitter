@@ -12,10 +12,12 @@ if(!isset($_SESSION['userId'])){
 
 
 $userId = $_SESSION['userId'];
+$typeOwner = 2;
+$dateToday = date('Y-m-d');
 
 try{
     //Getting users details
-    $stmt = $db->prepare('SELECT u.first_name, u.last_name, u.address, postal_codes.code, u.email, u.password, u.phone_no, u.image, u.info
+    $stmt = $db->prepare('SELECT u.first_name, u.last_name, u.address, postal_codes.code, u.email, u.password, u.phone_no, u.image, u.info, u.user_type_id_fk
                                     FROM users as u
                                     INNER JOIN postal_codes 
                                     ON postal_codes.postal_code_id = u.postal_code_id_fk 
@@ -27,22 +29,61 @@ try{
 
     $aRows = $stmt->fetchAll();
 
+    $userTypeId = $aRows[0]->user_type_id_fk;
+
     if(count($aRows) == 0){
         echo 'Sorry no users found!';
+    }
+
+    //Getting bookings
+    if ($userTypeId == $typeOwner){
+        $stmt = $db->prepare('SELECT b.booking_id, b.owner_user_id_fk, b.sitter_user_id_fk, b.start_date, b.end_date,
+                                              bt.type_name,
+                                              u.first_name, u.last_name
+                                       FROM bookings AS b
+                                       INNER JOIN booking_types AS bt ON bt.booking_type_id = b.booking_type_id_fk
+                                       JOIN users AS u ON u.user_id = b.sitter_user_id_fk
+                                       WHERE b.owner_user_id_fk = :userId');
+
+        $stmt->bindValue(':userId', $userId);
+
+        $stmt->execute();
+
+        $myBookings = $stmt->fetchAll();
+
+        if(count($myBookings) == 0){
+            echo 'Sorry no owner bookings found!';
+        }
+    }else{
+        $stmt = $db->prepare('SELECT b.booking_id, b.owner_user_id_fk, b.sitter_user_id_fk, b.start_date, b.end_date,
+                                              bt.type_name,
+                                              u.first_name, u.last_name
+                                       FROM bookings AS b
+                                       INNER JOIN booking_types AS bt ON bt.booking_type_id = b.booking_type_id_fk
+                                       JOIN users AS u ON u.user_id = b.owner_user_id_fk
+                                       WHERE b.sitter_user_id_fk = :userId');
+
+        $stmt->bindValue(':userId', $userId);
+
+        $stmt->execute();
+
+        $myBookings = $stmt->fetchAll();
+
+        if(count($myBookings) == 0){
+            echo 'Sorry no sitter bookings found!';
+        }
     }
 
 } catch (PDOException $ex) {
     echo $ex;
 }
 
-//TODO SHOW BOOKINGS => MAKE A NEW SECTION AND SHOW BOOKING TYPE, DATES AND NAME OF THE OWNE WHO BOOKED IT
-
 ?>
 
 <form id="profile" action="apis/api-update-profile.php" method="POST" enctype="multipart/form-data">
     <h3 class="pt-4">Profile information</h3>
     <div class="form-row pt-3 pb-3">
-        <div class="form-group col-md-6">
+        <div class="form-group col-md-6 text-left">
             <p>
                 <label for="fullName">Full name: </label>
                 <span id="fullName">
@@ -75,7 +116,7 @@ try{
                        placeholder="Leave empty otherwise">
             </p>
         </div>
-        <div class="form-group col-md-6">
+        <div class="form-group text-left col-md-6">
             <p>
                 <label for="phone">Phone number: </label>
                 <input name="phone"
@@ -126,6 +167,45 @@ try{
     <div class="form-row">
         <div class="form-group col-md-12">
             <button class="btn btn-warning" type="submit" name="updateUser">Update user</button>
+        </div>
+    </div>
+    <hr>
+    <div class="form-row">
+        <div class="form-group col-md-12">
+            <div class="form-group col-md-12">
+                <h4>My upcoming bookings</h4>
+                <?php
+                foreach ($myBookings as $booking){
+                    if($booking->start_date >= $dateToday){
+                        echo '
+                        <div class="form-row pt-3">
+                           <div class="form-group col-md-3">
+                                  Booking type:<br>                       
+                                '.$booking->type_name.'
+                            </div>
+                            <div class="form-group col-md-3">
+                                  Start date:<br>                       
+                                '.$booking->start_date.'
+                            </div>
+                            <div class="form-group col-md-3">
+                                  End date:<br>                       
+                                '.$booking->end_date.'
+                            </div>
+                            <div class="form-group col-md-3">
+                                  Booked with:<br>                       
+                                '.$booking->first_name.' '.$booking->last_name.'
+                            </div>
+                            <div class="form-group pt-4 col-md-12 text-right">
+                                <a href="apis/api-delete-booking?id='.$booking->booking_id.'" class="btn text-right btn-outline-danger">Delete</a>
+                           </div>
+                        </div>
+                        <hr>
+                    ';
+                    }
+
+                }
+                ?>
+            </div>
         </div>
     </div>
     <div class="form-row">
